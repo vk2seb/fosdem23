@@ -21,12 +21,12 @@
 \newcommand\pro{\item[\textbf{+}]}
 \newcommand\con{\item[\textbf{--}]}
 
-\title{Music synthesis with FPGAs \\and open-source tools}
+\title{\texttt{eurorack-pmod} R3: music with FPGAs}
 \subtitle{}
 \author{\texttt{github.com/schnommus/eurorack-pmod}}
 \institute{me@sebholzapfel.com}
+\titlegraphic{\includegraphics[height=4cm]{imgnew/pmod_top.PNG}}
 \date{}
-\titlegraphic{\includegraphics[height=3cm]{img/eurorack-pmod.jpg}}
 
 \begin{document}
 
@@ -92,32 +92,10 @@
 %       \end{itemize}
 %   \end{frame}
 
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=3cm]{img/backview.png}
-    \end{center}
-    % The hard work is already done.
-    \begin{block}{Motivation}
-        \begin{itemize}
-            \item Easy way to get started with FPGAs \& audio synthesis.
-            \item \textbf{Eurorack}: de facto standard (modular synthesis hardware).
-            \item \textbf{PMOD interface}: de facto standard (FPGA dev board expansion).
-            % Couldn't find anything that combines these 2 worlds.
-        \end{itemize}
-    \end{block}
-    \begin{block}{This project}
-        \begin{itemize}
-            \item Open hardware design for eurorack-compatible PMOD.
-            \item Open gateware design with drivers / calibration / examples.
-            \item Testbenches + simulation so you can play even without hardware.
-        \end{itemize}
-    \end{block}
-\end{frame}
-
 \begin{frame}{What is eurorack?}
     % INSERT PICTURE (my system)
     \begin{center}
-        \includegraphics[height=6cm]{img/my_system.png}
+        \includegraphics[height=6cm]{imgnew/pmod_insystem.png}
     \end{center}
     \begin{itemize}
         \item Modular system for constructing synthesizers.
@@ -140,61 +118,45 @@
     % INSERT PICTURE (module close-up with connector)
 \end{frame}
 
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=3cm]{imgnew/leds_front.PNG}
+    \end{center}
+    % The hard work is already done.
+    \begin{block}{Motivation}
+        \begin{itemize}
+            \item Easy way to get started with FPGAs \& audio synthesis.
+            \item \textbf{Eurorack}: de facto standard (modular synthesis hardware).
+            \item \textbf{PMOD interface}: de facto standard (FPGA dev board expansion).
+            % Couldn't find anything that combines these 2 worlds.
+        \end{itemize}
+    \end{block}
+    \begin{block}{This project}
+        \begin{itemize}
+            \item Open hardware design for eurorack-compatible PMOD.
+            \item Open gateware design with drivers / calibration / examples.
+            \item Testbenches + simulation so you can play even without hardware.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
 \begin{frame}{iCEBreaker (from 1BitSquared) / PMOD}
     \begin{center}
-        \includegraphics[height=6cm]{img/icebreaker.png}
+        \includegraphics[height=6cm]{imgnew/pmod_top_with_icebreaker.PNG}
     \end{center}
-\end{frame}
-
-\begin{frame}{iCESugar Nano / PMOD}
-\begin{center}
-    \includegraphics[height=6cm]{img/icesugar_nano.png}
-\end{center}
-\end{frame}
-
-
-\begin{frame}{Demo video}
-    \begin{itemize}
-        \item See: \texttt{github.com/schnommus/fosdem23}.
-        \item File: \texttt{vid/vco-trim.mov}: eurorack-pmod acting as voltage controlled oscillator, routed through low pass filter and ADSR. Finally side-chain compressed against kick and mixed with a random granular sampler.
-        \item File: \texttt{vid/seqsw-trim.mov}: eurorack-pmod acting as a sequential switch, randomly routing different inputs to different outputs based on a clock source. Inputs to the module are a wavetable VCO and output side-chain compressed against a kick.
-        %\item Alternatively: \texttt{https://youtu.be/vUoyLuF32Wk}, \texttt{https://youtu.be/UmG0CRECmTg}
-    \end{itemize}
-\end{frame}
-
-% RELATED EXISTING MODULES (do I need this?)
-
-%   \begin{frame}{Gitter i9}
-%   \begin{center}
-%       \includegraphics[height=6cm]{img/gitter_i9.png}
-%   \end{center}
-%   \end{frame}
-
-\begin{frame}{What can you do with \texttt{eurorack-pmod}?}
-    \begin{center}
-        \includegraphics[height=4cm]{img/frontconndof.png}
-    \end{center}
-    \begin{itemize}
-        \item Hardware, CODEC driver, calibration etc. already done.
-        \item Start prototyping interesting logic straight away.
-        \item Easily do things that are hard on MCU-based platforms.
-            \begin{itemize}
-                \item e.g. super fast latency, tonnes of VCOs, gate-level sim of retro synth
-            \end{itemize}
-        \item Even for simple things, fun playground to learn FPGAs!
-    \end{itemize}
 \end{frame}
 
 \begin{frame}{Gateware examples in \texttt{eurorack-pmod} repository}
     \begin{itemize}
         \item \texttt{vca.sv}: voltage controlled amplifier
         \item \texttt{vco.sv}: voltage controlled (wavetable) oscillator
+        \item \texttt{stereo\_echo.sv}: digital echo / delay
+        \item \texttt{pitch\_shift.sv}: audio rate pitch shifter
         \item \texttt{sampler.sv}: simple .wav file sampler
         \item \texttt{filter.sv}: high-pass, low-pass filter
         \item \texttt{clkdiv.sv}: clock divider
         \item \texttt{seqswitch.sv}: sequential routing switch
         \item \texttt{bitcrush.sv}: sample bit depth reducer
-        \item \texttt{delay.sv}: digital delay effect
     \end{itemize}
 \end{frame}
 
@@ -235,6 +197,18 @@ endmodule
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Hardware overview}
+    % INSERT PICTURE (hardware: top down, maybe labeled)
+    \begin{center}
+        \includegraphics[height=5cm]{imgnew/labelled.png}
+    \end{center}
+    \begin{itemize}
+        \item 3HP eurorack-compatible module with PMOD interface.
+        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
+        \item \textbf{NEW in R3!} Programmable LEDs // Jack detection // Calibration EEPROM
+    \end{itemize}
+\end{frame}
+
 \begin{frame}{Hardware evolution}
     % INSERT 3 generations
     \begin{center}
@@ -242,19 +216,7 @@ endmodule
     \end{center}
     \begin{itemize}
         \item KiCAD files available on GitHub.
-        \item Rev. 2.2 works without any bodges.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Hardware overview}
-    % INSERT PICTURE (hardware: top down, maybe labeled)
-    \begin{center}
-        \includegraphics[height=5cm]{img/topdown_labelled.png}
-    \end{center}
-    \begin{itemize}
-        \item 4HP eurorack-compatible module with PMOD interface.
-        \item 8 (4 in + 4 out) DC-coupled channels with LED indicators.
-        \item 192KHz / 32bit sampling on all channels.
+        \item Rev. 3.1 (in production) works without any bodges.
     \end{itemize}
 \end{frame}
 
@@ -287,12 +249,6 @@ endmodule
     \end{center}
 \end{frame}
 
-\begin{frame}{Gateware architecture}
-    \begin{center}
-        \includegraphics[height=6cm]{img/gateware-arch.png}
-    \end{center}
-\end{frame}
-
 \begin{frame}{No hardware? - VCVRack}
     \begin{center}
         \includegraphics[height=5cm]{img/vcvrack.png}
@@ -303,24 +259,10 @@ endmodule
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Manufacturing}
-    \begin{center}
-        \includegraphics[height=4cm]{img/mfg_stack.png}
-    \end{center}
-    \begin{block}{Revision 3 hardware}
-        \begin{itemize}
-            \item Jack insertion detection
-            \item Calibration memory on board
-            \item Leds controllable by FPGA directly
-            \item Cheaper to manufacture \& lower profile
-        \end{itemize}
-    \end{block}
-\end{frame}
-
 \begin{frame}{Thank you for listening!}
 
     \begin{center}
-        \includegraphics[height=3cm]{img/mfg_stack.png}
+        \includegraphics[height=3cm]{imgnew/pmod_backright.PNG}
     \end{center}
 
     \begin{itemize}
@@ -329,54 +271,18 @@ endmodule
         \item \texttt{github.com/schnommus/verilog-vcvrack}
     \end{itemize}
 
-    \begin{block}{Help! Should I do a manufacturing run?}
+    \begin{block}{Want one? Talk to me :)}
         \begin{itemize}
             \item Star the GitHub repository
             \item Sign up in `Manufacturing' section of \texttt{README.md}
         \end{itemize}
     \end{block}
 
-    %\begin{itemize}
-    %    \item Huge credit to Icestorm / Yosys / 1BitSquared / everyone making open-source FPGA toolchains and development platforms possible.
-    %\end{itemize}
+    \begin{itemize}
+        \item Huge thanks to YosysHQ / 1BitSquared / everyone making open-source FPGA toolchains / platforms possible.
+    \end{itemize}
     % Thank you to Icestorm / Yosys / 1BitSquared / Silvain Munaut.
 
 \end{frame}
-
-\begin{frame}{Backup: Light bleed through PCB}
-    % INSERT picture of LED indicators from a couple angles
-    \begin{center}
-        \includegraphics[height=5cm]{img/led_guide.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Backup: Signals in Eurorack}
-    \begin{block}{Control Voltages}
-        \begin{itemize}
-            \item Generally lower frequency (roughly $<1$kHz)
-            \item DC absolute accuracy is important (1V/oct)
-            \item \textbf{example:} drum trigger, oscillator pitch
-        \end{itemize}
-    \end{block}
-    % INSERT PICTURE (scope capture: CV)
-    \begin{center}
-        \includegraphics[height=4cm]{img/scope_cv.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Backup: Signals in Eurorack}
-    \begin{block}{Audio Signals}
-        \begin{itemize}
-            \item Generally higher frequency
-            \item Absolute accuracy not so important
-            \item \textbf{example:} echo or distortion effect.
-        \end{itemize}
-    \end{block}
-    % INSERT PICTURE (scope capture: audio)
-    \begin{center}
-        \includegraphics[height=4cm]{img/scope_audio.png}
-    \end{center}
-\end{frame}
-
 
 \end{document}
