@@ -21,11 +21,11 @@
 \newcommand\pro{\item[\textbf{+}]}
 \newcommand\con{\item[\textbf{--}]}
 
-\title{\texttt{eurorack-pmod} R3: music with FPGAs}
+\title{\texttt{tiliqua}: Synthesizing Music Synthesizers}
 \subtitle{}
-\author{\texttt{github.com/schnommus/eurorack-pmod}}
+\author{\texttt{github.com/apfelaudio/tiliqua}}
 \institute{me@sebholzapfel.com}
-\titlegraphic{\includegraphics[height=4cm]{imgnew/pmod_top.PNG}}
+\titlegraphic{\includegraphics[height=4cm]{img_tiliqua/tiliqua-disassembled-top.jpg}}
 \date{}
 
 \begin{document}
@@ -35,65 +35,60 @@
 \setwatermark{}
 
 % OUTLINE
+% What do I want to show? (plan for: 15 mins!)
+% - backstory / motivation
+% - tiliqua hardware
+% - gateware framework
+%   - example: polysynth
+% - live demo
+% - manufacturing
+% - ample time for questions?
 
-% why eurorack?
-% why eurorack-pmod?
-% evolution, how it works
-% (no hardware!) sim vcv & sim testbenches
-% (interest?) revision 3 and manufacturing
-% stay creative
+% mission: make it easier to synthesize music synthesizers (: why? because its fun!
+% what is / why eurorack?
+% eurorack-pmod summary, shipped some, crazy projects (neural net)
+% summary: lots of interest, difficult to share designs
+% tiliqua: a more opinionated platform, designed for rapid development
+%  - goal: extremely flexible platform for audio & video synthesis
+%  - goal: facilitate sharing of designs amongst the community
+%  - goal: gateway toward building your own FPGA-based instruments
+%  - goal: useful to musicians even if they don't want to modify it
+%  - goal: simple framework, easy to modify (amaranth HDL / streams / DSP library)
+% Key features
+%  - store and hot-load multiple bitstreams (sharing designs!)
+%  - built in amaranth HDL, pipelines composable without too deep knowledge
+% Tiliqua Hardware Overview
+% - one slide overall
+% - one slide soldiercrab module
+
 
 % What is Eurorack?
 % Simple Eurorack system (emph. DC/CV + Audio same jacks, requirements)
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
-% What is EURORACK-PMOD
-% Connect to any FPGA development board like such
-% Lets you write simple Verilog and explore sound
-% Examples in the repository (etc...)
-% Specific example
-
-% How does this work?
-
-% INTERESTING THINGS
-% HARDWARE
-% - AK4619
-% - Hardware evolution
-% - DC coupling & calibration
-%   - Misused. Price point. Fortunately outputs are DC coupled (register allows misuse)!
-% - Latency
-% - Light bleed mechanism
-% - Revision 3
-% GATEWARE
-% - Simple example cores / demo
-% SIMULATION
-% - VCVRack demo
-% - Test benches
-
-% CUSTOM PICS/VIDS NEEDED
-% - My eurorack system
-% - ICEbreaker and connected to ICEbreaker
-% - Latency on scope
-% - Prototypes r1 2 and 3 (next to each other?)
-% - VCVrack screen capture
-% - 2x video demos
-
-% TIMING issues and bad code can be musically interesting
-
-%   \begin{frame}{Outline}
-%       % BRIEF: who am I? / side project
-%       \begin{itemize}
-%           \item What is Eurorack?
-%           \item Why \texttt{eurorack-pmod}?
-%           \item Writing \& simulating gateware
-%           \item Hardware details
-%           \item Interest, manufacturing \& rev. 3
-%       \end{itemize}
-%   \end{frame}
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=3cm]{imgnew/leds_front.PNG}
+    \end{center}
+    % The hard work is already done.
+    \begin{block}{Motivation}
+        \begin{itemize}
+            \item Easy way to get started with FPGAs \& audio synthesis.
+            \item \textbf{Eurorack}: de facto standard (audio synthesis hardware).
+            % Couldn't find anything that combines these 2 worlds.
+        \end{itemize}
+    \end{block}
+    \begin{block}{Project Goals}
+        \begin{itemize}
+            \item Open hardware platform for audio \& video synthesis.
+            \item Easy to share designs.
+            \item Useful to musicians, without touching HDL.
+        \end{itemize}
+    \end{block}
+\end{frame}
 
 \begin{frame}{What is eurorack?}
-    % INSERT PICTURE (my system)
     \begin{center}
         \includegraphics[height=6cm]{imgnew/pmod_insystem.png}
     \end{center}
@@ -115,30 +110,46 @@
         \item Modules have \textbf{input} and \textbf{output} jacks.
         \item Maximum $\pm$10V signals on \textbf{$3.5$mm mono jacks}
     \end{itemize}
-    % INSERT PICTURE (module close-up with connector)
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{Past: eurorack-pmod R3.3}
+    % INSERT PICTURE (hardware: top down, maybe labeled)
     \begin{center}
-        \includegraphics[height=3cm]{imgnew/leds_front.PNG}
+        \includegraphics[height=5cm]{imgnew/r33_top.jpg}
     \end{center}
-    % The hard work is already done.
-    \begin{block}{Motivation}
-        \begin{itemize}
-            \item Easy way to get started with FPGAs \& audio synthesis.
-            \item \textbf{Eurorack}: de facto standard (modular synthesis hardware).
-            \item \textbf{PMOD interface}: de facto standard (FPGA dev board expansion).
-            % Couldn't find anything that combines these 2 worlds.
-        \end{itemize}
-    \end{block}
-    \begin{block}{This project}
-        \begin{itemize}
-            \item Open hardware design for eurorack-compatible PMOD.
-            \item Open gateware design with drivers / calibration / examples.
-            \item Testbenches + simulation so you can play even without hardware.
-        \end{itemize}
-    \end{block}
+    \begin{itemize}
+        \item 3HP eurorack-compatible module with PMOD interface.
+        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
+        \item Programmable LEDs // Touch sensitive// Calibration EEPROM
+    \end{itemize}
 \end{frame}
+
+
+\begin{frame}[fragile]
+
+    \begin{minted}[]{python}
+class MyDspComponent(wiring.Component):
+    i:  In(stream.Signature(ASQ))
+    o: Out(stream.Signature(ASQ))
+    def elaborate(self, platform):
+        m = Module()
+        # Create some DSP blocks ...
+        nco = dsp.SawNCO()
+        ws  = dsp.WaveShaper(
+                lut_function=sine_osc, lut_size=128, continuous=True),
+        rs  = dsp.Resample(fs_in=48000*N_UP, m_down=4)
+        # Connect them together ...
+        wiring.connect(m, flipped(self.i), nco.i)
+        wiring.connect(m, nco.o, ws.i)
+        wiring.connect(m, ws.o, rs.i)
+        wiring.connect(m, rs.o, flipped(self.o))
+        m.submodules += [nco, ws, rs]
+        return m
+    \end{minted}
+
+\end{frame}
+
+\iffalse
 
 \begin{frame}{iCEBreaker (from 1BitSquared) / PMOD}
     \begin{center}
@@ -284,5 +295,7 @@ endmodule
     % Thank you to Icestorm / Yosys / 1BitSquared / Silvain Munaut.
 
 \end{frame}
+
+\fi
 
 \end{document}
