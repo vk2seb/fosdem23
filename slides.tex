@@ -67,27 +67,6 @@
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=3cm]{imgnew/leds_front.PNG}
-    \end{center}
-    % The hard work is already done.
-    \begin{block}{Motivation}
-        \begin{itemize}
-            \item Easy way to get started with FPGAs \& audio synthesis.
-            \item \textbf{Eurorack}: de facto standard (audio synthesis hardware).
-            % Couldn't find anything that combines these 2 worlds.
-        \end{itemize}
-    \end{block}
-    \begin{block}{Project Goals}
-        \begin{itemize}
-            \item Open hardware platform for audio \& video synthesis.
-            \item Easy to share designs.
-            \item Useful to musicians, without touching HDL.
-        \end{itemize}
-    \end{block}
-\end{frame}
-
 \begin{frame}{What is eurorack?}
     \begin{center}
         \includegraphics[height=6cm]{imgnew/pmod_insystem.png}
@@ -99,31 +78,62 @@
     % Routed manually by mono 3.5mm TS phono jacks
 \end{frame}
 
-\begin{frame}{A typical module}
-    \begin{figure}
-       \centering
-       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/plaits_jacks.png}}
-       \hspace{1cm}
-       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/phono.png}}
-    \end{figure}
-    \begin{itemize}
-        \item Modules have \textbf{input} and \textbf{output} jacks.
-        \item Maximum $\pm$10V signals on \textbf{$3.5$mm mono jacks}
-    \end{itemize}
+\begin{frame}{Inspiration}
+% Cynthion
+% Glasgow
+% eurorack-pmod
+% Ornament & Crime
 \end{frame}
 
-\begin{frame}{Past: eurorack-pmod R3.3}
-    % INSERT PICTURE (hardware: top down, maybe labeled)
+% TODO: switch for NOT LABELLED
+\begin{frame}{}
     \begin{center}
-        \includegraphics[height=5cm]{imgnew/r33_top.jpg}
+        \includegraphics[height=8.4cm]{draw/tiliqua_front_labelled.png}
     \end{center}
-    \begin{itemize}
-        \item 3HP eurorack-compatible module with PMOD interface.
-        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
-        \item Programmable LEDs // Touch sensitive// Calibration EEPROM
-    \end{itemize}
 \end{frame}
 
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=3.5cm]{img_tiliqua/tiliqua-front-left.jpg}
+    \end{center}
+    \begin{block}{\texttt{tiliqua} combines --}
+        \begin{itemize}
+            \item Easy way to get started with FPGAs \& audio synthesis.
+            \item \textbf{Eurorack}: de facto standard (audio synthesis hardware).
+            % Couldn't find anything that combines these 2 worlds.
+        \end{itemize}
+    \end{block}
+    \begin{block}{\texttt{tiliqua} goals --}
+        \begin{itemize}
+            \item \textbf{Open hardware platform for audio \& video synthesis} -- Reuseable components.
+            \item \textbf{Easy to share designs} -- debugger built in, bitstream reloading mid-performance.
+            \item \textbf{Useful to musicians, whether they touch HDL or not}.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{draw/tiliqua_front_labelled.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{draw/tiliqua_diassembled_labelled.png}
+    \end{center}
+\end{frame}
+
+% TODO: EDITED + LABELLED
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{img_tiliqua/soldiercrab-top.jpg}
+    \end{center}
+\end{frame}
+
+% emphasis: model is distinct components and streams
+\begin{frame}{MyDspComponent picture}
+\end{frame}
 
 \begin{frame}[fragile]
 
@@ -149,7 +159,69 @@ class MyDspComponent(wiring.Component):
 
 \end{frame}
 
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{draw/diffusor.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{draw/polysynth.png}
+    \end{center}
+\end{frame}
+
+% emphasis: for many applications you only need to modify the DSP Core
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=6.5cm]{draw/tiliquasoc.png}
+    \end{center}
+\end{frame}
+
 \iffalse
+
+\begin{frame}{Demo}
+    \begin{block}{\texttt{tiliqua} example bitstreams --}
+        \begin{itemize}
+            \item \textbf{xbeam} -- 4-ch vectorscope, oscilloscope.
+            \item \textbf{polysyn} -- 8-voice polyphonic synth (touch or MIDI control).
+            \item \textbf{sidula} -- C64 SID emulation to modular.
+            \item \textbf{usb-sound} -- 4 IN, 4 OUT USB sound card.
+            \item \textbf{quadnco} -- 4ch oversampling wavetable oscillator.
+            \item \textbf{diffuser} -- Diffusion delay effect.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\fi
+
+
+\iffalse
+
+\begin{frame}{A typical module}
+    \begin{figure}
+       \centering
+       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/plaits_jacks.png}}
+       \hspace{1cm}
+       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/phono.png}}
+    \end{figure}
+    \begin{itemize}
+        \item Modules have \textbf{input} and \textbf{output} jacks.
+        \item Maximum $\pm$10V signals on \textbf{$3.5$mm mono jacks}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Past: eurorack-pmod R3.3}
+    % INSERT PICTURE (hardware: top down, maybe labeled)
+    \begin{center}
+        \includegraphics[height=5cm]{imgnew/r33_top.jpg}
+    \end{center}
+    \begin{itemize}
+        \item 3HP eurorack-compatible module with PMOD interface.
+        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
+        \item Programmable LEDs // Touch sensitive// Calibration EEPROM
+    \end{itemize}
+\end{frame}
 
 \begin{frame}{iCEBreaker (from 1BitSquared) / PMOD}
     \begin{center}
