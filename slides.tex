@@ -83,18 +83,14 @@
 % Glasgow
 % eurorack-pmod
 % Ornament & Crime
-\end{frame}
-
-% TODO: switch for NOT LABELLED
-\begin{frame}{}
     \begin{center}
-        \includegraphics[height=8.4cm]{draw/tiliqua_front_labelled.png}
+        \includegraphics[height=6.5cm]{draw/inspiration.png}
     \end{center}
 \end{frame}
 
 \begin{frame}{}
     \begin{center}
-        \includegraphics[height=3.5cm]{img_tiliqua/tiliqua-front-left.jpg}
+        \includegraphics[height=3.5cm]{img_tiliqua/tiliqua-lights.jpg}
     \end{center}
     \begin{block}{\texttt{tiliqua} combines --}
         \begin{itemize}
@@ -127,36 +123,54 @@
 % TODO: EDITED + LABELLED
 \begin{frame}{}
     \begin{center}
-        \includegraphics[height=8.4cm]{img_tiliqua/soldiercrab-top.jpg}
+        \includegraphics[height=8.1cm]{img_tiliqua/soldiercrab_labelled.png}
     \end{center}
 \end{frame}
 
+\begin{frame}{\texttt{tiliqua} DSP library - some components}
+    \begin{itemize}
+        \item \textbf{VCA} -- Voltage controlled amplifier.
+        \item \textbf{NCO} -- Numerically controlled oscillator.
+        \item \textbf{Trigger} -- Stream hysteresis.
+        \item \textbf{Ramp} -- Synchronized ramp generator.
+        \item \textbf{Waveshaper} -- Interpolating waveshaper.
+        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
+        \item \textbf{DelayLine} -- Memory-backed audio delay line.
+        \item \textbf{PitchShift} -- Granular pitch shifter.
+        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
+        \item \textbf{FIR} -- FIR filter.
+        \item \textbf{Resample} -- Rational resampler.
+        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
+    \end{itemize}
+\end{frame}
+
 % emphasis: model is distinct components and streams
-\begin{frame}{MyDspComponent picture}
+\begin{frame}{ExampleDspComponent}
+    \begin{center}
+        \includegraphics[height=5.1cm]{draw/mydsp.png}
+    \end{center}
 \end{frame}
 
 \begin{frame}[fragile]
-
     \begin{minted}[]{python}
-class MyDspComponent(wiring.Component):
-    i:  In(stream.Signature(ASQ))
-    o: Out(stream.Signature(ASQ))
+class ExampleDspComponent(wiring.Component):
+    i:  In(stream.Signature(fixed.SQ(f_width=15)))
+    o: Out(stream.Signature(fixed.SQ(f_width=15)))
     def elaborate(self, platform):
         m = Module()
         # Create some DSP blocks ...
-        nco = dsp.SawNCO()
-        ws  = dsp.WaveShaper(
+        nco     = dsp.SawNCO()
+        shaper  = dsp.WaveShaper(
                 lut_function=sine_osc, lut_size=128, continuous=True),
-        rs  = dsp.Resample(fs_in=48000*N_UP, m_down=4)
+        delay   = dsp.DiffusionDelay()
         # Connect them together ...
         wiring.connect(m, flipped(self.i), nco.i)
-        wiring.connect(m, nco.o, ws.i)
-        wiring.connect(m, ws.o, rs.i)
-        wiring.connect(m, rs.o, flipped(self.o))
+        wiring.connect(m, nco.o, shaper.i)
+        wiring.connect(m, shaper.o, delay.i)
+        wiring.connect(m, delay.o, flipped(self.o))
         m.submodules += [nco, ws, rs]
         return m
     \end{minted}
-
 \end{frame}
 
 \begin{frame}{}
@@ -178,22 +192,39 @@ class MyDspComponent(wiring.Component):
     \end{center}
 \end{frame}
 
-\iffalse
-
-\begin{frame}{Demo}
-    \begin{block}{\texttt{tiliqua} example bitstreams --}
-        \begin{itemize}
-            \item \textbf{xbeam} -- 4-ch vectorscope, oscilloscope.
-            \item \textbf{polysyn} -- 8-voice polyphonic synth (touch or MIDI control).
-            \item \textbf{sidula} -- C64 SID emulation to modular.
-            \item \textbf{usb-sound} -- 4 IN, 4 OUT USB sound card.
-            \item \textbf{quadnco} -- 4ch oversampling wavetable oscillator.
-            \item \textbf{diffuser} -- Diffusion delay effect.
-        \end{itemize}
-    \end{block}
+\begin{frame}{Demo - example bitstreams}
+    \begin{center}
+        \includegraphics[height=4cm]{img_tiliqua/demo.jpg}
+    \end{center}
+    \begin{itemize}
+        \item \textbf{xbeam} -- 4-ch vectorscope, oscilloscope.
+        \item \textbf{polysyn} -- 8-voice polyphonic synth (touch or MIDI control).
+        \item \textbf{sidula} -- C64 SID emulation to modular.
+        \item \textbf{usb-sound} -- 4 IN, 4 OUT USB sound card.
+        \item \textbf{quadnco} -- 4ch oversampling wavetable oscillator.
+        \item \textbf{diffuser} -- Diffusion delay effect.
+    \end{itemize}
 \end{frame}
 
-\fi
+\begin{frame}{Thank you for listening!}
+
+    \begin{center}
+        \includegraphics[height=4cm]{img_tiliqua/tiliqua_back.jpg}
+    \end{center}
+
+    \begin{itemize}
+        \item contact: \texttt{me@sebholzapfel.com}
+        \item repository: \texttt{github.com/apfelaudio/tiliqua}
+        \item mailing list: \texttt{apfelaudio.com}
+    \end{itemize}
+
+    \begin{block}{Preorders open soon!}
+        \begin{itemize}
+            \item \texttt{crowdsupply.com/apfelaudio/tiliqua}
+        \end{itemize}
+    \end{block}
+
+\end{frame}
 
 
 \iffalse
