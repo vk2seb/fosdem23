@@ -22,10 +22,10 @@
 \newcommand\con{\item[\textbf{--}]}
 
 \title{\texttt{tiliqua}: Synthesizing Music Synthesizers}
-\subtitle{}
+\subtitle{ORConf 2024}
 \author{\texttt{github.com/apfelaudio/tiliqua}}
-\institute{me@sebholzapfel.com}
-\titlegraphic{\includegraphics[height=4cm]{img_tiliqua/tiliqua-disassembled-top.jpg}}
+\institute{Seb Holzapfel / me@sebholzapfel.com}
+\titlegraphic{\includegraphics[height=3.5cm]{img_tiliqua/tiliqua-disassembled-top.jpg}}
 \date{}
 
 \begin{document}
@@ -67,6 +67,16 @@
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
+\begin{frame}{Inspiring open-hardware projects...}
+% Glasgow (fantastic resource for idiomatic Amaranth)
+% Cynthion (home of LUNA and LUNA-SOC projects)
+% eurorack-pmod
+% Ornament & Crime (successful design sharing ecosystem)
+    \begin{center}
+        \includegraphics[height=6.5cm]{draw/inspiration.png}
+    \end{center}
+\end{frame}
+
 \begin{frame}{What is eurorack?}
     \begin{center}
         \includegraphics[height=6cm]{imgnew/pmod_insystem.png}
@@ -78,22 +88,13 @@
     % Routed manually by mono 3.5mm TS phono jacks
 \end{frame}
 
-\begin{frame}{Inspiration}
-% Cynthion
-% Glasgow
-% eurorack-pmod
-% Ornament & Crime
-    \begin{center}
-        \includegraphics[height=6.5cm]{draw/inspiration.png}
-    \end{center}
-\end{frame}
-
 \begin{frame}{}
     \begin{center}
         \includegraphics[height=3.5cm]{img_tiliqua/tiliqua-lights.jpg}
     \end{center}
     \begin{block}{\texttt{tiliqua} combines --}
         \begin{itemize}
+            % some commercially successful but none open source (Novation Peak, Intellijel Rainmaker, UDO-8)
             \item Easy way to get started with FPGAs \& audio synthesis.
             \item \textbf{Eurorack}: de facto standard (audio synthesis hardware).
             % Couldn't find anything that combines these 2 worlds.
@@ -126,6 +127,8 @@
         \includegraphics[height=8.1cm]{img_tiliqua/soldiercrab_labelled.png}
     \end{center}
 \end{frame}
+
+% hardware was ~1/2 the work..
 
 \begin{frame}{\texttt{tiliqua} DSP library - some components}
     \begin{itemize}
@@ -174,6 +177,7 @@ class ExampleDspComponent(wiring.Component):
 \end{frame}
 
 \begin{frame}{}
+    % show diffuser code
     \begin{center}
         \includegraphics[height=8.4cm]{draw/diffusor.png}
     \end{center}
@@ -206,6 +210,8 @@ class ExampleDspComponent(wiring.Component):
     \end{itemize}
 \end{frame}
 
+% MAYBE: simulation demo
+
 \begin{frame}{Thank you for listening!}
 
     \begin{center}
@@ -218,187 +224,12 @@ class ExampleDspComponent(wiring.Component):
         \item mailing list: \texttt{apfelaudio.com}
     \end{itemize}
 
-    \begin{block}{Preorders open soon!}
+    \begin{block}{Launching on CrowdSupply!}
         \begin{itemize}
             \item \texttt{crowdsupply.com/apfelaudio/tiliqua}
         \end{itemize}
     \end{block}
 
 \end{frame}
-
-
-\iffalse
-
-\begin{frame}{A typical module}
-    \begin{figure}
-       \centering
-       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/plaits_jacks.png}}
-       \hspace{1cm}
-       \raisebox{-0.5\height}{\includegraphics[height=3cm]{img/phono.png}}
-    \end{figure}
-    \begin{itemize}
-        \item Modules have \textbf{input} and \textbf{output} jacks.
-        \item Maximum $\pm$10V signals on \textbf{$3.5$mm mono jacks}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Past: eurorack-pmod R3.3}
-    % INSERT PICTURE (hardware: top down, maybe labeled)
-    \begin{center}
-        \includegraphics[height=5cm]{imgnew/r33_top.jpg}
-    \end{center}
-    \begin{itemize}
-        \item 3HP eurorack-compatible module with PMOD interface.
-        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
-        \item Programmable LEDs // Touch sensitive// Calibration EEPROM
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{iCEBreaker (from 1BitSquared) / PMOD}
-    \begin{center}
-        \includegraphics[height=6cm]{imgnew/pmod_top_with_icebreaker.PNG}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Gateware examples in \texttt{eurorack-pmod} repository}
-    \begin{itemize}
-        \item \texttt{vca.sv}: voltage controlled amplifier
-        \item \texttt{vco.sv}: voltage controlled (wavetable) oscillator
-        \item \texttt{stereo\_echo.sv}: digital echo / delay
-        \item \texttt{pitch\_shift.sv}: audio rate pitch shifter
-        \item \texttt{sampler.sv}: simple .wav file sampler
-        \item \texttt{filter.sv}: high-pass, low-pass filter
-        \item \texttt{clkdiv.sv}: clock divider
-        \item \texttt{seqswitch.sv}: sequential routing switch
-        \item \texttt{bitcrush.sv}: sample bit depth reducer
-    \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-
-    \textbf{Voltage-Controlled Amplifier (SystemVerilog)}
-
-    \begin{minted}[highlightlines={10},highlightcolor=yellow]{verilog}
-module vca #(
-    parameter W = 16
-)(
-    input signed [W-1:0] sample_in0,
-    ...
-    output signed [W-1:0] sample_out0,
-    ...
-);
-
-assign sample_out0 = (sample_in0 * sample_in1) >>> W;
-
-endmodule
-    \end{minted}
-
-\end{frame}
-
-% Blah blah blah using DMA this would be difficult
-
-\begin{frame}{Chasing latency}
-    % INSERT picture of input to output latency
-    \begin{center}
-        \includegraphics[height=5.5cm]{img/latency_scope1.png}
-    \end{center}
-    \begin{itemize}
-        \item \texttt{eurorack-pmod}: about 120uS latency (24 samples @ 192KHz)
-        \begin{itemize}
-            \item Likely internal CODEC filter or DAC/ADC pipelining.
-        \end{itemize}
-        \item also pictured: \texttt{disting mk3} (digital precision adder)
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Hardware overview}
-    % INSERT PICTURE (hardware: top down, maybe labeled)
-    \begin{center}
-        \includegraphics[height=5cm]{imgnew/labelled.png}
-    \end{center}
-    \begin{itemize}
-        \item 3HP eurorack-compatible module with PMOD interface.
-        \item 8 (4 in + 4 out) DC-coupled channels, 192KHz / 32bit capable.
-        \item \textbf{NEW in R3!} Programmable LEDs // Jack detection // Calibration EEPROM
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Hardware evolution}
-    % INSERT 3 generations
-    \begin{center}
-        \includegraphics[height=5cm]{img/oldrevs.png}
-    \end{center}
-    \begin{itemize}
-        \item KiCAD files available on GitHub.
-        \item Rev. 3.1 (in production) works without any bodges.
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Deeper - Audio CODEC}
-    % INSERT AK4619VN datasheet capture
-    % OR INSERT schematic capture
-    \begin{center}
-        \includegraphics[height=4cm]{img/ak4619_chip.png}
-    \end{center}
-    \begin{block}{AK4619VN audio codec IC}
-        \begin{itemize}
-            \item All 8 channels on a single I2S-like interface (fits in 1x PMOD)
-            \item Much cheaper than instrumentation-quality ADCs/DACs (\$3/unit)
-            \item \textbf{Can be misused in a DC-coupled mode, if calibration used}
-        \end{itemize}
-    \end{block}
-\end{frame}
-
-\begin{frame}{DC coupling and calibration}
-    % INSERT compare input topology
-    \begin{itemize}
-        \item Ignore recommended input/output topology from datasheet
-        \item Disable all digital high-pass filters in CODEC registers
-        \item Calibrate DC extents at $\pm$ 5V, linear regression
-        \item Calibrate all samples online in FPGA gateware
-        % script is provided to do this (but ideally would do during mfg.)
-    \end{itemize}
-    \begin{center}
-        \includegraphics[height=4cm]{img/datasheet_ac_coupling.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{No hardware? - VCVRack}
-    \begin{center}
-        \includegraphics[height=5cm]{img/vcvrack.png}
-    \end{center}
-    \begin{itemize}
-        \item VCVRack plugin to \textbf{simulate verilog on a \texttt{eurorack-pmod} module}.
-        \item \texttt{github.com/schnommus/verilog-vcvrack}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Thank you for listening!}
-
-    \begin{center}
-        \includegraphics[height=3cm]{imgnew/pmod_backright.PNG}
-    \end{center}
-
-    \begin{itemize}
-        \item contact: \texttt{me@sebholzapfel.com}
-        \item \texttt{github.com/schnommus/eurorack-pmod}
-        \item \texttt{github.com/schnommus/verilog-vcvrack}
-    \end{itemize}
-
-    \begin{block}{Want one? Talk to me :)}
-        \begin{itemize}
-            \item Star the GitHub repository
-            \item Sign up in `Manufacturing' section of \texttt{README.md}
-        \end{itemize}
-    \end{block}
-
-    \begin{itemize}
-        \item Huge thanks to YosysHQ / 1BitSquared / everyone making open-source FPGA toolchains / platforms possible.
-    \end{itemize}
-    % Thank you to Icestorm / Yosys / 1BitSquared / Silvain Munaut.
-
-\end{frame}
-
-\fi
 
 \end{document}
