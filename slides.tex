@@ -67,6 +67,8 @@
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
+% This will be a quick recap
+
 \begin{frame}{Eurorack?}
     \begin{center}
         \includegraphics[height=6.5cm]{img3/xbeam_system_side.jpg}
@@ -79,9 +81,9 @@
 
 \begin{frame}{What is tiliqua?}
     \begin{center}
-        \includegraphics[height=4.5cm]{img3/tiliqua_smallsystem.jpg}
+        \includegraphics[height=5.0cm]{img3/tiliqua_smallsystem.jpg}
     \end{center}
-    \begin{block}{\texttt{tiliqua} goals --}
+    \begin{block}{}
         \begin{itemize}
             % 2 things: a hardware gadget and an RTL library / collection of examples
             \item \textbf{Open hardware platform for audio \& video synthesis} (Eurorack module)
@@ -111,25 +113,136 @@
     \end{center}
 \end{frame}
 
-\begin{frame}{What's new?}
+\begin{frame}{DSP pipelines, Amaranth HDL and streams}
+    \begin{center}
+        \includegraphics[height=5.1cm]{draw/mydsp.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+    \begin{minted}[]{python}
+class ExampleDspComponent(wiring.Component):
+    i:  In(stream.Signature(fixed.SQ(f_width=15)))
+    o: Out(stream.Signature(fixed.SQ(f_width=15)))
+    def elaborate(self, platform):
+        m = Module()
+        # Create some DSP blocks ...
+        nco     = dsp.SawNCO()
+        shaper  = dsp.WaveShaper(
+                lut_function=sine_osc, lut_size=128, continuous=True),
+        delay   = dsp.DiffusionDelay()
+        # Connect them together ...
+        wiring.connect(m, flipped(self.i), nco.i)
+        wiring.connect(m, nco.o, shaper.i)
+        wiring.connect(m, shaper.o, delay.i)
+        wiring.connect(m, delay.o, flipped(self.o))
+        m.submodules += [nco, ws, rs]
+        return m
+    \end{minted}
+\end{frame}
+
+\begin{frame}{Past year... 3 big things}
+\end{frame}
+
+\begin{frame}{Past year... Funding!}
+    \begin{center}
+    \includegraphics[height=6cm]{img3/nlnet_tiliquaio.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Past year... Preorders!}
+    \begin{center}
+    \includegraphics[height=6.0cm]{img3/cs.jpg}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Past year... Production!}
+    \begin{center}
+    \includegraphics[height=7.0cm]{img3/tiliquas_half_assembled.jpg}
+    \end{center}
+\end{frame}
+
+% production is just me :)
+
+\begin{frame}{Hurdles...}
     \begin{itemize}
-        \item \textbf{More DSP cores} -- Lots of frequency-domain stuff.
+        \item \textbf{Hardware/EMC} -- hairy bugs.
         \item \textbf{Amaranth fixed-point} -- almost done, extensively tested.
+        \item \textbf{More DSP cores} -- Lots of frequency-domain stuff.
         \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
         \item \textbf{USB Host} -- in pure gateware, based on LUNA.
-        \item \textbf{(Almost) shipping} -- hardware bugs, EMC testing, CrowdSupply.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Thanks to...}
-    \includegraphics[height=8.1cm]{img3/nlnet_tiliquaio.png}
+\begin{frame}{Hardware / EMC: chamber}
+    \begin{center}
+        \includegraphics[height=7.0cm]{img3/chamber.jpg}
+        \begin{itemize}
+            \item Open source TEM Cell design (By Petteri Aimonen: \textbf{essentialscrap.com/tem\_cell})
+        \end{itemize}
+    \end{center}
 \end{frame}
 
-\begin{frame}{Thanks to...}
-    \includegraphics[height=6.0cm]{img3/cs.jpg}
+\begin{frame}{Hardware / EMC: fail}
+    \begin{center}
+        \includegraphics[height=7.0cm]{img3/r2_bootloader_850khz.png}
+    \end{center}
 \end{frame}
 
-\begin{frame}{\texttt{tiliqua} DSP library - old things}
+\begin{frame}{Hardware / EMC: what worked}
+    \begin{block}{}
+        \begin{itemize}
+            \item Reroute Switchmode supplies
+            \item Reduce FPGA pin drive strengths
+            \item Reduce/remove split ground planes
+            \item \textbf{Careful with long cables!}
+            \item \textbf{Spread-spectrum PLL} (on ECP5!)
+        \end{itemize}
+    \end{block}
+    \begin{center}
+    \includegraphics[height=5.5cm]{img3/headphone_cable.jpg}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Amaranth: what is \texttt{lib.fixed}?}
+    \begin{block}{}
+        \begin{itemize}
+            \item \textbf{Proposed extension to Amaranth standard library}
+            \item Fixed-point types, operations, simulation, synthesis
+            \item Reference implementation \textbf{can be synthesized, simulated against numpy etc.!}
+            %\item \textbf{Demo}: FFT testing
+            \item \textbf{RFC + Implementation (WIP)}: github.com/amaranth-lang/amaranth/pull/1578
+        \end{itemize}
+    \end{block}
+    \begin{minted}[]{python}
+x = Signal(fixed.SQ(1, 15))
+y = Signal.like(x)
+m.d.sync += y.eq((x*fixed.Const(2.5)).saturate())
+    \end{minted}
+\end{frame}
+
+% Simple and then FFT testing demo??
+
+\begin{frame}[fragile]{Amaranth: \texttt{lib.fixed}: simple filter}
+    \begin{minted}[]{python}
+class OnePole(wiring.Component):
+    i: In(stream.Signature(fixed.SQ(1, 15))
+    o: Out(stream.Signature(fixed.SQ(1, 15))
+    def __init__(self, beta=0.9):
+        self.beta = beta
+    def elaborate():
+        m = Module()
+        # Forward stream handshakes
+        connect(m, flipped(self.i), self(self.o))
+        # Calculate `y = y[n-1] * beta + x * (1 - beta)`
+        a = fixed.Const(self.beta)
+        b = fixed.Const(1-self.beta)
+        m.d.sync += self.o.payload.eq(self.o.payload*a + self.i.payload*b)
+        return m
+    \end{minted}
+\end{frame}
+
+\begin{frame}{\texttt{tiliqua} DSP library - audio components}
     \begin{itemize}
         \item \textbf{VCA} -- Voltage controlled amplifier.
         \item \textbf{NCO} -- Numerically controlled oscillator.
@@ -143,6 +256,17 @@
         \item \textbf{FIR} -- FIR filter.
         \item \textbf{Resample} -- Rational resampler.
         \item \textbf{Boxcar} -- Cheap averaging without multipliers.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{\texttt{tiliqua} DSP library - (new!) frequency-domain processing}
+    \begin{itemize}
+        \item \textbf{FFT} -- forward + inverse, iterative, low area usage.
+        \item \textbf{CORDIC} -- complex/polar conversions.
+        \item \textbf{Window} -- windowing core and selectable window functions.
+        \item \textbf{STFT} -- forward + inverse, frequency-domain processing of time-domain signals.
+        \item \textbf{SpectralEnvelope} -- compute filtered power spectra over time.
+        \item \textbf{SpectralCrossSynthesis} -- compute filtered power spectra over time.
     \end{itemize}
 \end{frame}
 
@@ -181,22 +305,6 @@
 
 % hardware was ~1/2 the work..
 
-\begin{frame}{\texttt{tiliqua} DSP library - some components}
-    \begin{itemize}
-        \item \textbf{VCA} -- Voltage controlled amplifier.
-        \item \textbf{NCO} -- Numerically controlled oscillator.
-        \item \textbf{Trigger} -- Stream hysteresis.
-        \item \textbf{Ramp} -- Synchronized ramp generator.
-        \item \textbf{Waveshaper} -- Interpolating waveshaper.
-        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
-        \item \textbf{DelayLine} -- Memory-backed audio delay line.
-        \item \textbf{PitchShift} -- Granular pitch shifter.
-        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
-        \item \textbf{FIR} -- FIR filter.
-        \item \textbf{Resample} -- Rational resampler.
-        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
-    \end{itemize}
-\end{frame}
 
 % emphasis: model is distinct components and streams
 \begin{frame}{ExampleDspComponent}
