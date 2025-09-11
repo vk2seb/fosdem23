@@ -21,11 +21,11 @@
 \newcommand\pro{\item[\textbf{+}]}
 \newcommand\con{\item[\textbf{--}]}
 
-\title{\texttt{tiliqua}: Synthesizing Music Synthesizers}
-\subtitle{ORConf 2024}
-\author{\texttt{github.com/apfelaudio/tiliqua}}
-\institute{Seb Holzapfel / me@sebholzapfel.com}
-\titlegraphic{\includegraphics[height=3.5cm]{img_tiliqua/tiliqua-disassembled-top.jpg}}
+\title{\texttt{tiliqua}: FPGA-based audio DSP platform}
+\subtitle{ORConf 2025}
+\author{\texttt{github.com/apfaudio/tiliqua}}
+\institute{Seb Holzapfel / seb@apf.audio}
+\titlegraphic{\includegraphics[height=3.5cm]{img3/tiliqua_back.jpg}}
 \date{}
 
 \begin{document}
@@ -67,16 +67,85 @@
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
-\begin{frame}{What is eurorack?}
+\begin{frame}{Eurorack?}
     \begin{center}
-        \includegraphics[height=6cm]{imgnew/pmod_insystem.png}
+        \includegraphics[height=6.5cm]{img3/xbeam_system_side.jpg}
     \end{center}
     \begin{itemize}
-        \item Modular system for constructing synthesizers.
-        \item $>15,000$ modules, $>1,000$ different manufacturers.
+        \item Standard format for building synthesizers.
+        \item \textbf{Eurorack ecosystem:} $>15,000$ modules, $>1,000$ different manufacturers.
     \end{itemize}
-    % Routed manually by mono 3.5mm TS phono jacks
 \end{frame}
+
+\begin{frame}{What is tiliqua?}
+    \begin{center}
+        \includegraphics[height=4.5cm]{img3/tiliqua_smallsystem.jpg}
+    \end{center}
+    \begin{block}{\texttt{tiliqua} goals --}
+        \begin{itemize}
+            % 2 things: a hardware gadget and an RTL library / collection of examples
+            \item \textbf{Open hardware platform for audio \& video synthesis} (Eurorack module)
+            \item \textbf{Open gateware library of DSP components} (Amaranth HDL)
+            \item \textbf{Easy to share designs} -- debugger built in, hot bitstream switching.
+            \item \textbf{Useful to musicians, whether they touch HDL or not}.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8cm]{img3/tiliqua_labelled.jpg}
+    \end{center}
+\end{frame}
+
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.4cm]{draw/tiliqua_diassembled_labelled.png}
+    \end{center}
+\end{frame}
+
+% TODO: EDITED + LABELLED
+\begin{frame}{}
+    \begin{center}
+        \includegraphics[height=8.1cm]{img_tiliqua/soldiercrab_labelled.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{What's new?}
+    \begin{itemize}
+        \item \textbf{More DSP cores} -- Lots of frequency-domain stuff.
+        \item \textbf{Amaranth fixed-point} -- almost done, extensively tested.
+        \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
+        \item \textbf{USB Host} -- in pure gateware, based on LUNA.
+        \item \textbf{(Almost) shipping} -- hardware bugs, EMC testing, CrowdSupply.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Thanks to...}
+    \includegraphics[height=8.1cm]{img3/nlnet_tiliquaio.png}
+\end{frame}
+
+\begin{frame}{Thanks to...}
+    \includegraphics[height=6.0cm]{img3/cs.jpg}
+\end{frame}
+
+\begin{frame}{\texttt{tiliqua} DSP library - old things}
+    \begin{itemize}
+        \item \textbf{VCA} -- Voltage controlled amplifier.
+        \item \textbf{NCO} -- Numerically controlled oscillator.
+        \item \textbf{Trigger} -- Stream hysteresis.
+        \item \textbf{Ramp} -- Synchronized ramp generator.
+        \item \textbf{Waveshaper} -- Interpolating waveshaper.
+        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
+        \item \textbf{DelayLine} -- Memory-backed audio delay line.
+        \item \textbf{PitchShift} -- Granular pitch shifter.
+        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
+        \item \textbf{FIR} -- FIR filter.
+        \item \textbf{Resample} -- Rational resampler.
+        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
+    \end{itemize}
+\end{frame}
+
 
 \begin{frame}{Inspiring open-hardware projects...}
 % Glasgow (fantastic resource for idiomatic Amaranth)
@@ -109,24 +178,6 @@
     \end{block}
 \end{frame}
 
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=8.4cm]{draw/tiliqua_front_labelled.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=8.4cm]{draw/tiliqua_diassembled_labelled.png}
-    \end{center}
-\end{frame}
-
-% TODO: EDITED + LABELLED
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=8.1cm]{img_tiliqua/soldiercrab_labelled.png}
-    \end{center}
-\end{frame}
 
 % hardware was ~1/2 the work..
 
@@ -219,14 +270,14 @@ class ExampleDspComponent(wiring.Component):
     \end{center}
 
     \begin{itemize}
-        \item contact: \texttt{me@sebholzapfel.com}
-        \item repository: \texttt{github.com/apfelaudio/tiliqua}
-        \item mailing list: \texttt{apfelaudio.com}
+        \item contact: \texttt{seb@apf.audio}
+        \item repository: \texttt{github.com/apfaudio/tiliqua}
+        \item mailing list: \texttt{apf.audio}
     \end{itemize}
 
-    \begin{block}{Launching on CrowdSupply!}
+    \begin{block}{(almost) shipping!}
         \begin{itemize}
-            \item \texttt{crowdsupply.com/apfelaudio/tiliqua}
+            \item \texttt{crowdsupply.com/apfaudio/tiliqua}
         \end{itemize}
     \end{block}
 
