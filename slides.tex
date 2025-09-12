@@ -79,6 +79,8 @@
     \end{itemize}
 \end{frame}
 
+% quick demo: here's a really tiny one!
+
 \begin{frame}{What is tiliqua?}
     \begin{center}
         \includegraphics[height=5.0cm]{img3/tiliqua_smallsystem.jpg}
@@ -90,9 +92,12 @@
             \item \textbf{Open gateware library of DSP components} (Amaranth HDL)
             \item \textbf{Easy to share designs} -- debugger built in, hot bitstream switching.
             \item \textbf{Useful to musicians, whether they touch HDL or not}.
+            % 3 levels of using tiliqua...
         \end{itemize}
     \end{block}
 \end{frame}
+
+% quick demo: bitstream switching / flashing?
 
 \begin{frame}{}
     \begin{center}
@@ -113,6 +118,25 @@
     \end{center}
 \end{frame}
 
+% can use with or without the hardware
+
+\begin{frame}{\texttt{tiliqua} DSP library - some components}
+    \begin{itemize}
+        \item \textbf{Resample} -- Rational resampler.
+        \item \textbf{PitchShift} -- Granular pitch shifter.
+        \item \textbf{DelayLine} -- Memory-backed audio delay line.
+        \item \textbf{Waveshaper} -- Interpolating waveshaper.
+        \item \textbf{FIR} -- FIR filter.
+        \item \textbf{VCA} -- Voltage controlled amplifier.
+        \item \textbf{NCO} -- Numerically controlled oscillator.
+        \item \textbf{Trigger} -- Stream hysteresis.
+        \item \textbf{Ramp} -- Synchronized ramp generator.
+        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
+        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
+        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
+    \end{itemize}
+\end{frame}
+
 \begin{frame}{DSP pipelines, Amaranth HDL and streams}
     \begin{center}
         \includegraphics[height=5.1cm]{draw/mydsp.png}
@@ -122,8 +146,8 @@
 \begin{frame}[fragile]
     \begin{minted}[]{python}
 class ExampleDspComponent(wiring.Component):
-    i:  In(stream.Signature(fixed.SQ(f_width=15)))
-    o: Out(stream.Signature(fixed.SQ(f_width=15)))
+    i:  In(stream.Signature(fixed.SQ(1, 15)))
+    o: Out(stream.Signature(fixed.SQ(1, 15)))
     def elaborate(self, platform):
         m = Module()
         # Create some DSP blocks ...
@@ -132,10 +156,10 @@ class ExampleDspComponent(wiring.Component):
                 lut_function=sine_osc, lut_size=128, continuous=True),
         delay   = dsp.DiffusionDelay()
         # Connect them together ...
-        wiring.connect(m, flipped(self.i), nco.i)
-        wiring.connect(m, nco.o, shaper.i)
-        wiring.connect(m, shaper.o, delay.i)
-        wiring.connect(m, delay.o, flipped(self.o))
+        connect(m, flipped(self.i), nco.i)
+        connect(m, nco.o, shaper.i)
+        connect(m, shaper.o, delay.i)
+        connect(m, delay.o, flipped(self.o))
         m.submodules += [nco, ws, rs]
         return m
     \end{minted}
@@ -164,15 +188,45 @@ class ExampleDspComponent(wiring.Component):
 
 % production is just me :)
 
-\begin{frame}{Hurdles...}
+% 3 levels of use
+% turn it on (musician)
+% compose DSP pipelines (beginner)
+% modify the firmware
+% SoC-based bitstreams (advanced)
+
+\begin{frame}{Challenges...}
     \begin{itemize}
-        \item \textbf{Hardware/EMC} -- hairy bugs.
-        \item \textbf{Amaranth fixed-point} -- almost done, extensively tested.
-        \item \textbf{More DSP cores} -- Lots of frequency-domain stuff.
+        \item \textbf{More DSP cores, lib.fixed} -- FFTs, STFTs, frequency-domain stuff!
+        \item \textbf{Hardware/EMC/CE} -- PCBA redesigns.
         \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
-        \item \textbf{USB Host} -- in pure gateware, based on LUNA.
+        \item \textbf{USB2 Host} -- in pure gateware, based on LUNA.
+        \item \textbf{Persistent options} -- bitstream auto-restore on power loss.
+        %\item \textbf{Tiny GPU} -- hardware-accelerated fonts/line drawing.
     \end{itemize}
 \end{frame}
+
+\begin{frame}{\texttt{tiliqua} DSP library - frequency-domain processing (new!)}
+    \begin{itemize}
+        \item \textbf{FFT} -- forward + inverse, iterative, low area usage.
+        \item \textbf{CORDIC} -- complex/polar conversions.
+        \item \textbf{Window} -- windowing core and selectable window functions.
+        \item \textbf{STFT} -- forward + inverse, frequency-domain processing of time-domain signals.
+        \item \textbf{SpectralEnvelope} -- compute filtered power spectra over time.
+        \item \textbf{SpectralCrossSynthesis} -- vocoder-like effect.
+    \end{itemize}
+    \begin{block}{Also: check out Amaranth \texttt{lib.fixed}}
+        \begin{itemize}
+            \item \textbf{Extension to Amaranth standard library}
+            \item \textbf{RFC + Implementation (WIP)}: github.com/amaranth-lang/amaranth/pull/1578
+            \item \textbf{Comments welcome!}
+        \end{itemize}
+    \end{block}
+    \begin{itemize}
+        \item \textbf{FFT / \texttt{lib.fixed} Demo?}
+    \end{itemize}
+\end{frame}
+
+% Demo: FFT implementation / simulation
 
 \begin{frame}{Hardware / EMC: chamber}
     \begin{center}
@@ -204,172 +258,31 @@ class ExampleDspComponent(wiring.Component):
     \end{center}
 \end{frame}
 
-\begin{frame}[fragile]{Amaranth: what is \texttt{lib.fixed}?}
-    \begin{block}{}
-        \begin{itemize}
-            \item \textbf{Proposed extension to Amaranth standard library}
-            \item Fixed-point types, operations, simulation, synthesis
-            \item Reference implementation \textbf{can be synthesized, simulated against numpy etc.!}
-            %\item \textbf{Demo}: FFT testing
-            \item \textbf{RFC + Implementation (WIP)}: github.com/amaranth-lang/amaranth/pull/1578
-        \end{itemize}
-    \end{block}
-    \begin{minted}[]{python}
-x = Signal(fixed.SQ(1, 15))
-y = Signal.like(x)
-m.d.sync += y.eq((x*fixed.Const(2.5)).saturate())
-    \end{minted}
-\end{frame}
-
-% Simple and then FFT testing demo??
-
-\begin{frame}[fragile]{Amaranth: \texttt{lib.fixed}: simple filter}
-    \begin{minted}[]{python}
-class OnePole(wiring.Component):
-    i: In(stream.Signature(fixed.SQ(1, 15))
-    o: Out(stream.Signature(fixed.SQ(1, 15))
-    def __init__(self, beta=0.9):
-        self.beta = beta
-    def elaborate():
-        m = Module()
-        # Forward stream handshakes
-        connect(m, flipped(self.i), self(self.o))
-        # Calculate `y = y[n-1] * beta + x * (1 - beta)`
-        a = fixed.Const(self.beta)
-        b = fixed.Const(1-self.beta)
-        m.d.sync += self.o.payload.eq(self.o.payload*a + self.i.payload*b)
-        return m
-    \end{minted}
-\end{frame}
-
-\begin{frame}{\texttt{tiliqua} DSP library - audio components}
+\begin{frame}{Dynamic clocking (new!)}
     \begin{itemize}
-        \item \textbf{VCA} -- Voltage controlled amplifier.
-        \item \textbf{NCO} -- Numerically controlled oscillator.
-        \item \textbf{Trigger} -- Stream hysteresis.
-        \item \textbf{Ramp} -- Synchronized ramp generator.
-        \item \textbf{Waveshaper} -- Interpolating waveshaper.
-        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
-        \item \textbf{DelayLine} -- Memory-backed audio delay line.
-        \item \textbf{PitchShift} -- Granular pitch shifter.
-        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
-        \item \textbf{FIR} -- FIR filter.
-        \item \textbf{Resample} -- Rational resampler.
-        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
+        \item People have different screens (pixel clock).
+        \item Same bitstream should work everywhere.
+        \item Core reads display EDID, dynamically adapts resolution!
+        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/107}
     \end{itemize}
 \end{frame}
 
-\begin{frame}{\texttt{tiliqua} DSP library - (new!) frequency-domain processing}
+\begin{frame}{USB2 Host (new!)}
     \begin{itemize}
-        \item \textbf{FFT} -- forward + inverse, iterative, low area usage.
-        \item \textbf{CORDIC} -- complex/polar conversions.
-        \item \textbf{Window} -- windowing core and selectable window functions.
-        \item \textbf{STFT} -- forward + inverse, frequency-domain processing of time-domain signals.
-        \item \textbf{SpectralEnvelope} -- compute filtered power spectra over time.
-        \item \textbf{SpectralCrossSynthesis} -- compute filtered power spectra over time.
+        \item Cheapest MIDI keyboards only have USB MIDI :(
+        \item Solution: pure-gateware USB2 high-speed host. (first?)
+        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/65}
+        \item Builds on LUNA: \texttt{https://github.com/greatscottgadgets/luna}
     \end{itemize}
 \end{frame}
 
-
-\begin{frame}{Inspiring open-hardware projects...}
-% Glasgow (fantastic resource for idiomatic Amaranth)
-% Cynthion (home of LUNA and LUNA-SOC projects)
-% eurorack-pmod
-% Ornament & Crime (successful design sharing ecosystem)
-    \begin{center}
-        \includegraphics[height=6.5cm]{draw/inspiration.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=3.5cm]{img_tiliqua/tiliqua-lights.jpg}
-    \end{center}
-    \begin{block}{\texttt{tiliqua} combines --}
-        \begin{itemize}
-            % some commercially successful but none open source (Novation Peak, Intellijel Rainmaker, UDO-8)
-            \item Easy way to get started with FPGAs \& audio synthesis.
-            \item \textbf{Eurorack}: de facto standard (audio synthesis hardware).
-            % Couldn't find anything that combines these 2 worlds.
-        \end{itemize}
-    \end{block}
-    \begin{block}{\texttt{tiliqua} goals --}
-        \begin{itemize}
-            \item \textbf{Open hardware platform for audio \& video synthesis} -- Reuseable components.
-            \item \textbf{Easy to share designs} -- debugger built in, bitstream reloading mid-performance.
-            \item \textbf{Useful to musicians, whether they touch HDL or not}.
-        \end{itemize}
-    \end{block}
-\end{frame}
-
-
-% hardware was ~1/2 the work..
-
-
-% emphasis: model is distinct components and streams
-\begin{frame}{ExampleDspComponent}
-    \begin{center}
-        \includegraphics[height=5.1cm]{draw/mydsp.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}[fragile]
-    \begin{minted}[]{python}
-class ExampleDspComponent(wiring.Component):
-    i:  In(stream.Signature(fixed.SQ(f_width=15)))
-    o: Out(stream.Signature(fixed.SQ(f_width=15)))
-    def elaborate(self, platform):
-        m = Module()
-        # Create some DSP blocks ...
-        nco     = dsp.SawNCO()
-        shaper  = dsp.WaveShaper(
-                lut_function=sine_osc, lut_size=128, continuous=True),
-        delay   = dsp.DiffusionDelay()
-        # Connect them together ...
-        wiring.connect(m, flipped(self.i), nco.i)
-        wiring.connect(m, nco.o, shaper.i)
-        wiring.connect(m, shaper.o, delay.i)
-        wiring.connect(m, delay.o, flipped(self.o))
-        m.submodules += [nco, ws, rs]
-        return m
-    \end{minted}
-\end{frame}
-
-\begin{frame}{}
-    % show diffuser code
-    \begin{center}
-        \includegraphics[height=8.4cm]{draw/diffusor.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=8.4cm]{draw/polysynth.png}
-    \end{center}
-\end{frame}
-
-% emphasis: for many applications you only need to modify the DSP Core
-\begin{frame}{}
-    \begin{center}
-        \includegraphics[height=6.5cm]{draw/tiliquasoc.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Demo - example bitstreams}
-    \begin{center}
-        \includegraphics[height=4cm]{img_tiliqua/demo.jpg}
-    \end{center}
+\begin{frame}{Persistent Options (new!)}
     \begin{itemize}
-        \item \textbf{xbeam} -- 4-ch vectorscope, oscilloscope.
-        \item \textbf{polysyn} -- 8-voice polyphonic synth (touch or MIDI control).
-        \item \textbf{sidula} -- C64 SID emulation to modular.
-        \item \textbf{usb-sound} -- 4 IN, 4 OUT USB sound card.
-        \item \textbf{quadnco} -- 4ch oversampling wavetable oscillator.
-        \item \textbf{diffuser} -- Diffusion delay effect.
+        \item Wear-levelled persistent storage to configuration flash
+        \item Store last bitstream, all options, autoboot.
+        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/129}
     \end{itemize}
 \end{frame}
-
-% MAYBE: simulation demo
 
 \begin{frame}{Thank you for listening!}
 
