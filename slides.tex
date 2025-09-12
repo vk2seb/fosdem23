@@ -120,73 +120,12 @@
 
 % can use with or without the hardware
 
-\begin{frame}{\texttt{tiliqua} DSP library - some components}
-    \begin{itemize}
-        \item \textbf{Resample} -- Rational resampler.
-        \item \textbf{PitchShift} -- Granular pitch shifter.
-        \item \textbf{DelayLine} -- Memory-backed audio delay line.
-        \item \textbf{Waveshaper} -- Interpolating waveshaper.
-        \item \textbf{FIR} -- FIR filter.
-        \item \textbf{VCA} -- Voltage controlled amplifier.
-        \item \textbf{NCO} -- Numerically controlled oscillator.
-        \item \textbf{Trigger} -- Stream hysteresis.
-        \item \textbf{Ramp} -- Synchronized ramp generator.
-        \item \textbf{SVF} -- Tunable state-variable filter (HPF/BPF/LPF).
-        \item \textbf{MatrixMix} -- Matrix mixer with tweakable coefficients.
-        \item \textbf{Boxcar} -- Cheap averaging without multipliers.
-    \end{itemize}
-\end{frame}
-
 \begin{frame}{DSP pipelines, Amaranth HDL and streams}
     \begin{center}
         \includegraphics[height=5.1cm]{draw/mydsp.png}
     \end{center}
 \end{frame}
 
-\begin{frame}[fragile]
-    \begin{minted}[]{python}
-class ExampleDspComponent(wiring.Component):
-    i:  In(stream.Signature(fixed.SQ(1, 15)))
-    o: Out(stream.Signature(fixed.SQ(1, 15)))
-    def elaborate(self, platform):
-        m = Module()
-        # Create some DSP blocks ...
-        nco     = dsp.SawNCO()
-        shaper  = dsp.WaveShaper(
-                lut_function=sine_osc, lut_size=128, continuous=True),
-        delay   = dsp.DiffusionDelay()
-        # Connect them together ...
-        connect(m, flipped(self.i), nco.i)
-        connect(m, nco.o, shaper.i)
-        connect(m, shaper.o, delay.i)
-        connect(m, delay.o, flipped(self.o))
-        m.submodules += [nco, ws, rs]
-        return m
-    \end{minted}
-\end{frame}
-
-\begin{frame}{Past year... 3 big things}
-\end{frame}
-
-\begin{frame}{Past year... Funding!}
-    \begin{center}
-    \includegraphics[height=6cm]{img3/nlnet_tiliquaio.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Past year... Preorders!}
-    \begin{center}
-    \includegraphics[height=6.0cm]{img3/cs.jpg}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Past year... Production!}
-    \begin{center}
-    \includegraphics[height=7.0cm]{img3/tiliquas_half_assembled.jpg}
-    \end{center}
-\end{frame}
-
-% production is just me :)
 
 % 3 levels of use
 % turn it on (musician)
@@ -194,10 +133,9 @@ class ExampleDspComponent(wiring.Component):
 % modify the firmware
 % SoC-based bitstreams (advanced)
 
-\begin{frame}{Challenges...}
+\begin{frame}{New things!}
     \begin{itemize}
         \item \textbf{More DSP cores, lib.fixed} -- FFTs, STFTs, frequency-domain stuff!
-        \item \textbf{Hardware/EMC/CE} -- PCBA redesigns.
         \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
         \item \textbf{USB2 Host} -- in pure gateware, based on LUNA.
         \item \textbf{Persistent options} -- bitstream auto-restore on power loss.
@@ -221,42 +159,9 @@ class ExampleDspComponent(wiring.Component):
             \item \textbf{Comments welcome!}
         \end{itemize}
     \end{block}
-    \begin{itemize}
-        \item \textbf{FFT / \texttt{lib.fixed} Demo?}
-    \end{itemize}
 \end{frame}
 
 % Demo: FFT implementation / simulation
-
-\begin{frame}{Hardware / EMC: chamber}
-    \begin{center}
-        \includegraphics[height=7.0cm]{img3/chamber.jpg}
-        \begin{itemize}
-            \item Open source TEM Cell design (By Petteri Aimonen: \textbf{essentialscrap.com/tem\_cell})
-        \end{itemize}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Hardware / EMC: fail}
-    \begin{center}
-        \includegraphics[height=7.0cm]{img3/r2_bootloader_850khz.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Hardware / EMC: what worked}
-    \begin{block}{}
-        \begin{itemize}
-            \item Reroute Switchmode supplies
-            \item Reduce FPGA pin drive strengths
-            \item Reduce/remove split ground planes
-            \item \textbf{Careful with long cables!}
-            \item \textbf{Spread-spectrum PLL} (on ECP5!)
-        \end{itemize}
-    \end{block}
-    \begin{center}
-    \includegraphics[height=5.5cm]{img3/headphone_cable.jpg}
-    \end{center}
-\end{frame}
 
 \begin{frame}{Dynamic clocking (new!)}
     \begin{itemize}
@@ -284,6 +189,26 @@ class ExampleDspComponent(wiring.Component):
     \end{itemize}
 \end{frame}
 
+\begin{frame}{Thank you... Funding!}
+    \begin{center}
+    \includegraphics[height=6cm]{img3/nlnet_tiliquaio.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Thank you... Preorders!}
+    \begin{center}
+    \includegraphics[height=6.0cm]{img3/cs.jpg}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Production!}
+    \begin{center}
+    \includegraphics[height=7.0cm]{img3/tiliquas_half_assembled.jpg}
+    \end{center}
+\end{frame}
+
+% production is just me :)
+
 \begin{frame}{Thank you for listening!}
 
     \begin{center}
@@ -296,12 +221,42 @@ class ExampleDspComponent(wiring.Component):
         \item mailing list: \texttt{apf.audio}
     \end{itemize}
 
-    \begin{block}{(almost) shipping!}
+    \begin{block}{want one?}
         \begin{itemize}
             \item \texttt{crowdsupply.com/apfaudio/tiliqua}
         \end{itemize}
     \end{block}
 
+\end{frame}
+
+\begin{frame}{(bonus) Hardware / EMC: chamber}
+    \begin{center}
+        \includegraphics[height=7.0cm]{img3/chamber.jpg}
+        \begin{itemize}
+            \item Open source TEM Cell design (By Petteri Aimonen: \textbf{essentialscrap.com/tem\_cell})
+        \end{itemize}
+    \end{center}
+\end{frame}
+
+\begin{frame}{(bonus) Hardware / EMC: fail}
+    \begin{center}
+        \includegraphics[height=7.0cm]{img3/r2_bootloader_850khz.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{(bonus) Hardware / EMC: what worked}
+    \begin{block}{}
+        \begin{itemize}
+            \item Reroute Switchmode supplies
+            \item Reduce FPGA pin drive strengths
+            \item Reduce/remove split ground planes
+            \item \textbf{Careful with long cables!}
+            \item \textbf{Spread-spectrum PLL} (on ECP5!)
+        \end{itemize}
+    \end{block}
+    \begin{center}
+    \includegraphics[height=5.5cm]{img3/headphone_cable.jpg}
+    \end{center}
 \end{frame}
 
 \end{document}
