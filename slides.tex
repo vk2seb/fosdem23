@@ -67,18 +67,6 @@
 % Existing FPGA-based modules (v short)
 % & existing development platforms (v short)
 
-% This will be a quick recap
-
-\begin{frame}{Eurorack?}
-    \begin{center}
-        \includegraphics[height=6.5cm]{img3/xbeam_system_side.jpg}
-    \end{center}
-    \begin{itemize}
-        \item Standard format for building synthesizers.
-        \item \textbf{Eurorack ecosystem:} $>15,000$ modules, $>1,000$ different manufacturers.
-    \end{itemize}
-\end{frame}
-
 % quick demo: here's a really tiny one!
 
 \begin{frame}{What is tiliqua?}
@@ -90,11 +78,23 @@
             % 2 things: a hardware gadget and an RTL library / collection of examples
             \item \textbf{Open hardware platform for audio \& video synthesis} (Eurorack module)
             \item \textbf{Open gateware library of DSP components} (Amaranth HDL)
-            \item \textbf{Easy to share designs} -- debugger built in, hot bitstream switching.
-            \item \textbf{Useful to musicians, whether they touch HDL or not}.
+            \item \textbf{Hot bitstream switching} -- easy to share designs.
+            \item \textbf{Useful to musicians, even without touching HDL}.
             % 3 levels of using tiliqua...
         \end{itemize}
     \end{block}
+\end{frame}
+
+% This will be a quick recap
+
+\begin{frame}{Why Eurorack?}
+    \begin{center}
+        \includegraphics[height=6.5cm]{img3/xbeam_system_side.jpg}
+    \end{center}
+    \begin{itemize}
+        \item Most popular format for modular synthesizers.
+        \item \textbf{Ecosystem:} $>15,000$ modules, $>1,000$ different manufacturers.
+    \end{itemize}
 \end{frame}
 
 % quick demo: bitstream switching / flashing?
@@ -126,6 +126,13 @@
     \end{center}
 \end{frame}
 
+% DEMOS ARE
+% 1) intro / swapping / polysyn
+% 2) USB2 host (video)
+% 3) display hot-swapping
+% 4) Tiny GPU
+% 5) Auto-restore
+
 
 % 3 levels of use
 % turn it on (musician)
@@ -133,17 +140,18 @@
 % modify the firmware
 % SoC-based bitstreams (advanced)
 
-\begin{frame}{New things!}
+\begin{frame}{What's new?}
     \begin{itemize}
-        \item \textbf{More DSP cores, lib.fixed} -- FFTs, STFTs, frequency-domain stuff!
-        \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
-        \item \textbf{USB2 Host} -- in pure gateware, based on LUNA.
-        \item \textbf{Persistent options} -- bitstream auto-restore on power loss.
-        \item \textbf{Tiny GPU} -- hardware-accelerated fonts/line drawing.
+        \item \textbf{More DSP cores} -- frequency-domain stuff!
+        \item \textbf{Streaming / visualization}.
+        \item \textbf{USB2 Host} -- in pure gateware.
+        \item \textbf{Display hot-swapping} -- dynamic clocking.
+        \item \textbf{Tiny GPU} -- font/line acceleration.
+        \item \textbf{Auto-restore} -- persist settings to config flash.
     \end{itemize}
 \end{frame}
 
-\begin{frame}{\texttt{tiliqua} DSP library - frequency-domain processing (new!)}
+\begin{frame}{\texttt{tiliqua} DSP library - frequency-domain processing}
     \begin{itemize}
         \item \textbf{FFT} -- forward + inverse, iterative, low area usage.
         \item \textbf{CORDIC} -- complex/polar conversions.
@@ -161,21 +169,15 @@
     \end{block}
 \end{frame}
 
-% Demo: FFT implementation / simulation
-
-\begin{frame}{Dynamic clocking (new!)}
+\begin{frame}{Streaming / visualization}
     \begin{center}
-        \includegraphics[height=5.1cm]{img3/scrn_back.jpg}
+        \includegraphics[height=8cm]{img3/vcv.jpg}
     \end{center}
-    \begin{itemize}
-        \item People have different screens (pixel clock).
-        \item Same bitstream should work everywhere.
-        \item Core reads display EDID, dynamically adapts resolution!
-        \item Details: \texttt{github.com/apfaudio/tiliqua/pull/107}
-    \end{itemize}
 \end{frame}
 
-\begin{frame}{USB2 Host (new!)}
+% Demo: FFT implementation / simulation
+
+\begin{frame}{USB2 Host}
     \begin{center}
         \includegraphics[height=5.1cm]{img3/usb_midi.jpg}
     \end{center}
@@ -187,7 +189,19 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Persistent Options (new!)}
+\begin{frame}{Display hot-swap / dynamic clocking}
+    \begin{center}
+        \includegraphics[height=5.1cm]{img3/scrn_back.jpg}
+    \end{center}
+    \begin{itemize}
+        \item People have different screens (pixel clock).
+        \item Same bitstream should work everywhere.
+        \item Core reads display EDID, dynamically adapts resolution!
+        \item Details: \texttt{github.com/apfaudio/tiliqua/pull/107}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Auto-restore / persistent options}
     \begin{center}
         \includegraphics[height=5cm]{img3/autoboot.jpg}
     \end{center}
