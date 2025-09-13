@@ -139,7 +139,7 @@
         \item \textbf{Dynamic pixel clocks} -- hot-swap screens.
         \item \textbf{USB2 Host} -- in pure gateware, based on LUNA.
         \item \textbf{Persistent options} -- bitstream auto-restore on power loss.
-        %\item \textbf{Tiny GPU} -- hardware-accelerated fonts/line drawing.
+        \item \textbf{Tiny GPU} -- hardware-accelerated fonts/line drawing.
     \end{itemize}
 \end{frame}
 
@@ -164,28 +164,47 @@
 % Demo: FFT implementation / simulation
 
 \begin{frame}{Dynamic clocking (new!)}
+    \begin{center}
+        \includegraphics[height=5.1cm]{img3/scrn_back.jpg}
+    \end{center}
     \begin{itemize}
         \item People have different screens (pixel clock).
         \item Same bitstream should work everywhere.
         \item Core reads display EDID, dynamically adapts resolution!
-        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/107}
+        \item Details: \texttt{github.com/apfaudio/tiliqua/pull/107}
     \end{itemize}
 \end{frame}
 
 \begin{frame}{USB2 Host (new!)}
+    \begin{center}
+        \includegraphics[height=5.1cm]{img3/usb_midi.jpg}
+    \end{center}
     \begin{itemize}
         \item Cheapest MIDI keyboards only have USB MIDI :(
         \item Solution: pure-gateware USB2 high-speed host. (first?)
-        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/65}
-        \item Builds on LUNA: \texttt{https://github.com/greatscottgadgets/luna}
+        \item Details: \texttt{github.com/apfaudio/tiliqua/pull/65}
+        \item Builds on LUNA: \texttt{github.com/greatscottgadgets/luna}
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Persistent Options (new!)}
+    \begin{center}
+        \includegraphics[height=5cm]{img3/autoboot.jpg}
+    \end{center}
     \begin{itemize}
         \item Wear-levelled persistent storage to configuration flash
         \item Store last bitstream, all options, autoboot.
-        \item Details: \texttt{https://github.com/apfaudio/tiliqua/pull/129}
+        \item Details: \texttt{github.com/apfaudio/tiliqua/pull/129}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Tiny \texttt{embedded-graphics} GPU (new!)}
+    \begin{center}
+        \includegraphics[height=5cm]{img3/tinygpu.jpg}
+    \end{center}
+    \begin{itemize}
+        \item Text, line, raster accelerator for \texttt{embedded-graphics}.
+        \item Reduces bitstream size even more!.
     \end{itemize}
 \end{frame}
 
@@ -212,7 +231,7 @@
 \begin{frame}{Thank you for listening!}
 
     \begin{center}
-        \includegraphics[height=4cm]{img_tiliqua/tiliqua_back.jpg}
+        \includegraphics[height=5cm]{img3/swirl.jpg}
     \end{center}
 
     \begin{itemize}
@@ -221,42 +240,12 @@
         \item mailing list: \texttt{apf.audio}
     \end{itemize}
 
-    \begin{block}{want one?}
+    \begin{block}{}
         \begin{itemize}
             \item \texttt{crowdsupply.com/apfaudio/tiliqua}
         \end{itemize}
     \end{block}
 
-\end{frame}
-
-\begin{frame}{(bonus) Hardware / EMC: chamber}
-    \begin{center}
-        \includegraphics[height=7.0cm]{img3/chamber.jpg}
-        \begin{itemize}
-            \item Open source TEM Cell design (By Petteri Aimonen: \textbf{essentialscrap.com/tem\_cell})
-        \end{itemize}
-    \end{center}
-\end{frame}
-
-\begin{frame}{(bonus) Hardware / EMC: fail}
-    \begin{center}
-        \includegraphics[height=7.0cm]{img3/r2_bootloader_850khz.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{(bonus) Hardware / EMC: what worked}
-    \begin{block}{}
-        \begin{itemize}
-            \item Reroute Switchmode supplies
-            \item Reduce FPGA pin drive strengths
-            \item Reduce/remove split ground planes
-            \item \textbf{Careful with long cables!}
-            \item \textbf{Spread-spectrum PLL} (on ECP5!)
-        \end{itemize}
-    \end{block}
-    \begin{center}
-    \includegraphics[height=5.5cm]{img3/headphone_cable.jpg}
-    \end{center}
 \end{frame}
 
 \end{document}
